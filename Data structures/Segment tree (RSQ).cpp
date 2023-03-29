@@ -72,7 +72,7 @@ int main(){
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, prev_n;
+    int n;
     cin >> n;
     vector<int> a(n);
     for (int i = 0; i < n; ++i){

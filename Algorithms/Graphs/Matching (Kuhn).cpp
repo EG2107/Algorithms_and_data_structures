@@ -2,17 +2,26 @@
 #include<vector>
 using namespace std;
 
-bool try_kuhn(int v, vector<bool> &used, vector<int> &mt, vector<vector<int>> &g){
-    if (used[v]){
+bool try_kuhn(int v, int iter, vector<vector<int>> &g, vector<int> &mt, vector<int> &used){
+    if (used[v] == iter){
         return false;
     }
-    used[v] = true;
-    for (int to : g[v]){
-        if (mt[to] == -1 || try_kuhn (mt[to], used, mt, g)){
-            mt[to] = v;
+    used[v] = iter;
+
+    for (int u : g[v]){
+        if (mt[u] == -1){
+            mt[u] = v;
             return true;
         }
     }
+
+    for (int u : g[v]){
+        if (try_kuhn(mt[u], iter, g, mt, used)){
+            mt[u] = v;
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -24,31 +33,29 @@ int main(){
     int n, m;
     cin >> n >> m;
     vector<vector<int>> g(n, vector<int>(0));
-    for (int i = 0; i < n; ++i){
-        int tmp;
-        while (cin >> tmp && tmp){
-            g[i].push_back(tmp-1);
+    for (int v = 0; v < n; ++v){
+        int u;
+        while ((cin >> u) && u){
+            g[v].push_back(u - 1);
         }
     }
 
     vector<int> mt(m, -1);
-    vector<bool> used;
+    vector<int> used(n, -1);
     for (int v = 0; v < n; ++v){
-        used.assign(n, false);
-        try_kuhn(v, used, mt, g);
+        try_kuhn(v, v, g, mt, used);
     }
 
     int cnt = 0;
-    for (int i = 0; i < m; ++i){
-        if (mt[i] != -1){
+    for (int v = 0; v < m; ++v){
+        if (mt[v] != -1){
             cnt++;
         }
     }
-
     cout << cnt << "\n";
-    for (int i = 0; i < m; ++i){
-        if (mt[i] != -1){
-            cout << mt[i] + 1 << " " << i + 1 << "\n";
+    for (int v = 0; v < m; ++v){
+        if (mt[v] != -1){
+            cout << mt[v] + 1 << " " << v + 1 << "\n";
         }
     }
 
